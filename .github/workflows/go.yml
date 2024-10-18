@@ -50,5 +50,5 @@ jobs:
       # шаг с именем "Build and Test with Docker" 
       - name: Build and push Docker image  
         run: | 
-            docker build -t your-docker-image:${{ github.ref_name }} .
-            docker push your-docker-image:${{ github.ref_name }}
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/final13:${{ github.ref_name }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/final13:${{ github.ref_name }}
