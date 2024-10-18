@@ -1,0 +1,54 @@
+name: Go Build
+
+on: 
+  push:
+    branches:
+      - pr
+    tags: 
+      - 'v*'  # добавил tags, чтобы publish запускался только при добавлении тегов, начинающихся с v (например, v1.0.0).
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout Go
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.2'
+    
+      - name: List files
+        run: ls -R
+      
+      - name: Go Dependencies
+        run: go mod tidy
+        
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -v ./...
+    
+  # шаг с аутентификацией в Docker Hub
+  publish: 
+    needs: build  # Убедитесь, что job "build" завершен до начала "publish"
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest 
+    steps: 
+      - name: Checkout code 
+        uses: actions/checkout@v4 
+    
+      - name: Log in to Docker Hub  
+        uses: docker/login-action@v2  
+        with:  
+            username: ${{ secrets.DOCKER_USERNAME }}  
+            password: ${{ secrets.DOCKER_PASSWORD }} 
+
+      # шаг с именем "Build and Test with Docker" 
+      - name: Build and push Docker image  
+        run: | 
+            docker build -t your-docker-image:${{ github.ref_name }} .
+            docker push your-docker-image:${{ github.ref_name }}
