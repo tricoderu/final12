@@ -34,7 +34,7 @@ jobs:
     
   # шаг с аутентификацией в Docker Hub
   publish: 
-    needs: build  # Убедитесь, что job "build" завершен до начала "publish"
+    needs: build
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest 
     steps: 
