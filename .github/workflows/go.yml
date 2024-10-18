@@ -4,8 +4,10 @@ on:
   push:
     branches:
       - pr
-    tags: 
-      - 'v*'  # добавил tags, чтобы publish запускался только при добавлении тегов, начинающихся с v (последний, v1.0.3).
+    tags:
+      # добавил tags, чтобы publish запускался только при добавлении тегов, начинающихся с v (последний, v1.0.4).
+      # изменил форму триггера тегов с 'v*' на 'v*.*.*'
+      - 'v*.*.*'
 
 jobs:
   build:
@@ -47,8 +49,10 @@ jobs:
             username: ${{ secrets.DOCKER_USERNAME }}  
             password: ${{ secrets.DOCKER_PASSWORD }} 
 
-      # шаг с именем "Build and Test with Docker" 
+      # переписал run, добавив секреты
+      # docker build -t final13:{{ github.ref_name }} . / знак доллара пришлось убрать, ибо не комментило
+      # docker push final13:{{ github.ref_name }}
       - name: Build and push Docker image  
-        run: | 
+        run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/final13:${{ github.ref_name }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/final13:${{ github.ref_name }}
